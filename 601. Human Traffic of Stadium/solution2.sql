@@ -1,3 +1,8 @@
+/*
+Goal: find all rows where there are at least 3 consecutive dates with people >= 100
+Using LEAD and LAG to check neighbors (previous and next ids)
+Then filter cases where a row is the first, middle, or last in such a sequence
+*/
 WITH base AS (
         SELECT *,
             LEAD(id, 1) OVER(ORDER BY id) AS next_id,
