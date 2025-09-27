@@ -1,5 +1,5 @@
 /* 
-Use SUM() OVER (ORDER BY turn) to calculate the cumulative weight.
+Use SUM() OVER (ORDER BY turn) to calculate the cumulative weight--- running total
 cum_weight = total until this person.
 Pick the last person with cum_weight <= 1000.
 */
