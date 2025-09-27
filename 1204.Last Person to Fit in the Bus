@@ -1,4 +1,3 @@
-
 '''
 Running sum of weights in queue order.
 cum_weight = total until this person.
