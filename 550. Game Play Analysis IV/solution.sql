@@ -1,3 +1,11 @@
+'''
+  Calculate D1 retention
+  Logic:
+  1. Find each player’s first login date.
+  2. Check if the player logged in again the next day.
+  3. Count players who came back the next day, divide by all players
+'''
+
 WITH first_login AS (
   SELECT player_id, MIN(event_date) AS first_login
   FROM Activity
