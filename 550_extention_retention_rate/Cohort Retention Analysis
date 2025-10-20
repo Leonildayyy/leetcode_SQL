@@ -1,0 +1,42 @@
+-- convert timestamp to the date format and remove duplicate logins per player per day 
+WITH activity AS (
+  SELECT DISTINCT
+    pid,
+    DATE(Time_utc) AS event_date
+  FROM player_logged_in
+),
+
+--  get the first login date for each player (cohort date)
+first_login AS (
+  SELECT
+    pid,
+    MIN(event_date) AS first_login
+  FROM activity
+  GROUP BY pid
+),
+
+-- Flag whether each player logged in again on day +1, +3, and +7 
+retention_flags AS (
+  SELECT
+    f.pid,
+    f.first_login,
+    MAX(CASE WHEN a.event_date = DATE_ADD(f.first_login, INTERVAL 1 DAY) THEN 1 ELSE 0 END) AS D1,
+    MAX(CASE WHEN a.event_date = DATE_ADD(f.first_login, INTERVAL 3 DAY) THEN 1 ELSE 0 END) AS D3,
+    MAX(CASE WHEN a.event_date = DATE_ADD(f.first_login, INTERVAL 7 DAY) THEN 1 ELSE 0 END) AS D7
+  FROM first_login f
+  LEFT JOIN activity a
+    ON a.pid = f.pid
+  GROUP BY f.pid, f.first_login
+)
+
+--  calculate retention rate for each cohort date
+SELECT
+  first_login AS cohort_date,
+  COUNT(*)                         AS cohort_size,
+  ROUND(SUM(D1) / COUNT(*), 2)     AS d1_retention,
+  ROUND(SUM(D3) / COUNT(*), 2)     AS d3_retention,
+  ROUND(SUM(D7) / COUNT(*), 2)     AS d7_retention
+FROM retention_flags
+WHERE DATE_ADD(first_login, INTERVAL 7 DAY) <= (SELECT MAX(event_date) FROM activity) 
+GROUP BY first_login
+ORDER BY first_login;
