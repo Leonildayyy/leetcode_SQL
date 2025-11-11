@@ -1,6 +1,7 @@
--- 1. Use LEFT JOIN to include users who have no orders in 2019
--- 2. Apply the date filter inside the ON clause so that users without orders are not filtered out
-
+/* 
+1. Use LEFT JOIN to include users who have no orders in 2019
+2. Apply the date filter inside the ON clause so that users without orders are not filtered out
+*/
 SELECT
     u.user_id,
     u.join_date,
